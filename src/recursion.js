@@ -8,7 +8,7 @@
 // factorial(5); // 120
 var factorial = function(n) {
   if (n < 0) {
-    return -1;
+    return null;
   } else {
     if (n === 0) {
       return 1;
@@ -35,16 +35,16 @@ var sum = function(array) {
 var arraySum = function(array) {
   if (array.length === 0) {
     return 0;
-  } else  {
-    var sum = 0;
-    for (var i = 0; i < array.length; i++) {
-      if (Array.isArray(array[i]) === true) {
-        sum += arraySum(array[i]);
-        continue;
+    } else {
+      var sum = 0;
+      for (var i = 0; i < array.length; i++) {
+        if (Array.isArray(array[i]) === true) {
+          sum += arraySum(array[i]);
+          continue;
+        }
+        sum += array[i];
       }
-      sum += array[i];
-    }
-    return sum;
+      return sum;
   }
 };
 
@@ -57,9 +57,9 @@ var isEven = function(n) {
       return false;
     } else {
       if (n > 1) {
-        return checkEven(n - 2);
+        return isEven(n - 2);
       } else {
-        return checkEven(n + 2);
+        return isEven(n + 2);
       }
     }
   }
@@ -69,23 +69,45 @@ var isEven = function(n) {
 // sumBelow(10); // 45
 // sumBelow(7); // 21
 var sumBelow = function(n) {
-  if (n < 1) {
+  if (n === 0) {
     return 0;
   } else {
-    return (n - 1) + sumBelow(n - 1)
+    if (n < 1) {
+      return (n + 1) + sumBelow(n + 1);
+    } else {
+      return (n - 1) + sumBelow(n - 1)
+    }
   }
 };
 
 // 6. Get the integers within a range (x, y).
 // range(2,9); // [3,4,5,6,7,8]
 var range = function(x, y) {
-  if (y - x === 2) {
-    return [x + 1];
-  } else {
-    var rangeArray = range(x, y - 1);
-    rangeArray.push(y - 1);
-    return rangeArray;
-  }
+  if (y > x) {
+    if (y - x < 2) {
+      return [];
+    } else {
+      if (y - x === 2) {
+        return [x + 1];
+      } else {
+        var rangeArray = range(x, y - 1);
+        rangeArray.push(y - 1);
+        return rangeArray;
+      }
+    }
+    } else {
+        if (x - y < 2) {
+      return [];
+    } else {
+      if (x - y === 2) {
+        return [y + 1];
+      } else {
+        var rangeArray = range(x - 1, y);
+        rangeArray.unshift(x - 1);
+        return rangeArray;
+      }
+    }
+    }
 };
 
 // 7. Compute the exponent of a number.
@@ -130,7 +152,7 @@ var exponent = function(base, exp) {
 // powerOfTwo(16); // true
 // powerOfTwo(10); // false
 var powerOfTwo = function(n) {
-  if (n === 2) {
+  if (n === 1 || n === 2) {
     return true;
   } else {
     if (n % 2 === 1 || n < 2) {
@@ -261,7 +283,18 @@ var countValuesInObj = function(obj, value) {
 // 24. Find all keys in an object (and nested objects) by a provided name and rename
 // them to a provided new name while preserving the value stored at that key.
 var replaceKeysInObj = function(obj, oldKey, newKey) {
-
+  for (var key in obj) {
+		var item = obj[key];
+		if (key === oldKey) {
+      obj[newKey] = obj[oldKey];
+      delete obj[oldKey];
+    } else {
+		  if (typeof(item) === 'object') {
+			  obj[key] = replaceKeysInObj(item, oldKey, newKey);
+      }
+		}
+	}
+    return obj;
 };
 
 // 25. Get the first n Fibonacci numbers. In the Fibonacci sequence, each subsequent
