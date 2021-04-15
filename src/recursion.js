@@ -26,7 +26,7 @@ var sum = function(array) {
   if (array.length === 0) {
     return 0;
   } else {
-    return array.pop() + sum(array)
+    return array[array.length - 1] + sum(array.slice(0, array.length - 1));
   }
 };
 
@@ -118,33 +118,26 @@ var range = function(x, y) {
 var exponent = function(base, exp) {
   if (base === 0 && exp === 0) {
     return NaN;
-  } else {
-    if (base === 0 && exp !== 0) {
-      return 0;
-    } else {
-      if (base === 1) {
-        return 1;
-      } else {
-        if (exp === 0) {
-          return 1;
-        } else {
-          if (exp === 1) {
-            return base;
-          } else {
-            if (exp === -1) {
-              return 1 / base;
-            } else {
-              if (exp < -1) {
-                return 1 / base * exponent(base, exp + 1);
-              } else {
-                  return base * exponent(base, exp - 1);
-              }
-            }
-          }
-        }
-      }
-    }
   }
+  if (base === 0 && exp !== 0) {
+    return 0;
+  }
+  if (base === 1) {
+    return 1;
+  }
+  if (exp === 0) {
+    return 1;
+  }
+  if (exp === 1) {
+    return base;
+  }
+  if (exp === -1) {
+    return 1 / base;
+  }
+  if (exp < -1) {
+    return 1 / base * exponent(base, exp + 1);
+  }
+  return base * exponent(base, exp - 1);
 };
 
 // 8. Determine if a number is a power of two.
@@ -154,22 +147,19 @@ var exponent = function(base, exp) {
 var powerOfTwo = function(n) {
   if (n === 1 || n === 2) {
     return true;
-  } else {
-    if (n % 2 === 1 || n < 2) {
-      return false;
-    } else {
-        return powerOfTwo(n / 2);
-    }
   }
+  if (n % 2 === 1 || n < 2) {
+    return false;
+  }
+  return powerOfTwo(n / 2);
 };
 
 // 9. Write a function that reverses a string.
 var reverse = function(string) {
   if (string.length === 0) {
     return '';
-  } else {
-    return string[string.length - 1] + reverse(string.substring(0, string.length - 1));
   }
+  return string[string.length - 1] + reverse(string.substring(0, string.length - 1));
 };
 
 // 10. Write a function that determines if a string is a palindrome.
@@ -193,16 +183,114 @@ var palindrome = function(string) {
 // modulo(17,5) // 2
 // modulo(22,6) // 4
 var modulo = function(x, y) {
+  var isNegative = false;
+
+  if (y === 0) {
+    return NaN;
+  }
+  if (x === 0) {
+    return 0;
+  }
+  if (x === y) {
+    return 0;
+  }
+
+  if (x < 0) {
+    isNegative = true;
+    x = -x;
+  }
+  if (y < 0) {
+    y = -y;
+  }
+
+  if (x - y < 0) {
+    if (isNegative) {
+      return -x;
+    }
+    return x;
+  }
+
+  if (x - y < y) {
+    if (isNegative) {
+      return -(x - y);
+    }
+    return x - y;
+  }
+  if (isNegative) {
+    return -modulo(x - y, y);
+  }
+  return modulo(x - y, y);
 };
 
 // 12. Write a function that multiplies two numbers without using the * operator or
 // Math methods.
 var multiply = function(x, y) {
+  var isNegative = false;
+
+  if (x === 0 || y === 0) {
+    return 0;
+  }
+
+  if (
+    (x < 0 && y > 0) ||
+    (x > 0 && y < 0)
+  ) {
+    isNegative = true;
+  }
+
+  if (x < 0) {
+    x = -x;
+  }
+  if (y < 0) {
+    y = -y;
+  }
+
+  if (y > 0) {
+    if (isNegative) {
+      return -(x + multiply(x, y - 1));
+    }
+    return x + multiply(x, y - 1);
+  }
 };
 
 // 13. Write a function that divides two numbers without using the / operator or
 // Math methods to arrive at an approximate quotient (ignore decimal endings).
 var divide = function(x, y) {
+  var isNegative = false;
+
+  if (y === 0) {
+    return NaN;
+  }
+  if (x === 0) {
+    return 0;
+  }
+  if (x === y) {
+    return 1;
+  }
+
+  if (
+    (x < 0 && y > 0) ||
+    (x > 0 && y < 0)
+  ) {
+    isNegative = true;
+  }
+
+  if (x < 0) {
+    x = -x;
+  }
+  if (y < 0) {
+    y = -y;
+  }
+
+  if (x < y) {
+    return 0;
+  }
+  if (x > 0) {
+    if (isNegative) {
+      return 1 - (x - divide(x - y, y));
+    }
+    return 1 + divide(x - y, y);
+  }
 };
 
 // 14. Find the greatest common divisor (gcd) of two positive numbers. The GCD of two
@@ -211,6 +299,16 @@ var divide = function(x, y) {
 // http://www.cse.wustl.edu/~kjg/cse131/Notes/Recursion/recursion.html
 // https://www.khanacademy.org/computing/computer-science/cryptography/modarithmetic/a/the-euclidean-algorithm
 var gcd = function(x, y) {
+  if (x < 0 || y < 0) {
+    return null;
+  }
+  if (x === y) {
+    return x;
+  }
+  if (x > y) {
+    return gcd(x - y, y);
+  }
+  return gcd (x, y - x);
 };
 
 // 15. Write a function that compares each character of two strings and returns true if
